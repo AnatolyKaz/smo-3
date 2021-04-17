@@ -37,7 +37,7 @@ function imitation() {
 
         queue = queue.length
             ? queue.filter(app => {
-                if (i - app.arrivalTimeApp === timeInQueue) {
+                if ( app.arrivalTimeApp + timeInQueue === i) {
                     refusalAppsCount++
                     return 0
                 } else {
@@ -58,11 +58,10 @@ function imitation() {
             allApps++
             timeNewApp = getTimeNewApp(i)
 
-            debugger
-
             if (apps.length === n && queue.length === m) {
                 refusalAppsCount++
             } else if (apps.length === n && queue.length < m) {
+                
                 queue.push({
                     arrivalTimeApp: i,
                 })
