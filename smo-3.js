@@ -1,5 +1,6 @@
 imitation()
 
+//==============imitation=================
 function imitation() {
     const time = 36000 //с
     const lambda = 0.05
@@ -12,12 +13,17 @@ function imitation() {
 
     let freeChannels = n
     let countApps = [] //обслуженные заявки
-    let allApps = 0
+    let allApps = 0 /// все заявки
     let timeNewApp = 0 //время прихода новой заявки
     let refusalAppsCount = 0 // количество заявок с отказом
     let freeTimeCount = 0 //время простоя системы
     let apps = [] //массив заявок на обслуживании
     let queue = [] // заявки в очереди
+
+    /// параметры которые необходимо найти
+    let countChannels = [] // количество занятых каналов в оазные моменты времени
+    let fullWorkingSystem = 0 // количество моментов времени когда истема полностью занята
+    let queueTime = [] // время проведенное в очереди
 
     ////=======main cycle==================
 
@@ -37,7 +43,8 @@ function imitation() {
 
         queue = queue.length
             ? queue.filter(app => {
-                if ( app.arrivalTimeApp + timeInQueue === i) {
+                if (app.arrivalTimeApp + timeInQueue === i) {
+                    queueTime.push(timeInQueue)
                     refusalAppsCount++
                     return 0
                 } else {
@@ -46,7 +53,7 @@ function imitation() {
             }) : queue
 
         if (freeChannels) {
-            let systemState = redistributionChannels(apps,queue, i)
+            let systemState = redistributionChannels(apps, queue, i)
             apps = systemState.apps
             queue = systemState.queue
         }
@@ -61,7 +68,7 @@ function imitation() {
             if (apps.length === n && queue.length === m) {
                 refusalAppsCount++
             } else if (apps.length === n && queue.length < m) {
-                
+
                 queue.push({
                     arrivalTimeApp: i,
                 })
@@ -124,12 +131,33 @@ function imitation() {
             }
         }
 
+        countChannels.push(apps.length)
+
+        if (apps.length === n && queue.length === m) {
+            fullWorkingSystem++
+        }
         if (!apps.length && i) {
             freeTimeCount++
         }
     }
     ////=======main cycle==================
+    /////=============calc params=================
 
+    console.log('\n')
+    console.log('Среднее число занятых каналов' + ' ' + (countChannels.reduce((a, b) => (a + b))) / countChannels.length)
+    console.log(
+		'Среднее время в очереди(сек)' +
+			' ' +
+			queueTime.reduce((a, b) => a + b) / queueTime.length
+	)
+    console.log(
+		'Вероятность полной занятости ситемы' +
+			' ' +
+			fullWorkingSystem / (time - freeTimeCount)
+	)
+    console.log('\n')
+
+    /////=============calc params=================
     //////==========functions=====================
     function redistributionChannels(apps, queue, i) {
         if (queue.length) {
@@ -139,6 +167,7 @@ function imitation() {
                     queue[j].workingChannels = 1
                     freeChannels -= 1
                     apps.push(queue[j])
+                    queueTime.push(i - queue[j].arrivalTimeApp)
                     queue = queue.filter((app, index) => (index === j ? 0 : 1))
                     apps = redistribution(apps, i)
                 }
@@ -215,5 +244,6 @@ function imitation() {
     }
 }
 
+//==============imitation=================
 
 

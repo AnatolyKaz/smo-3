@@ -31,10 +31,12 @@
   </component>
   <component name="PropertiesComponent">
     <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
+    <property name="NEW_TOOLWINDOW_STRIPE_DEFAULTS" value="true" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="nodejs_package_manager_path" value="npm" />
     <property name="settings.editor.selected.configurable" value="MTConfigurable" />
     <property name="vue.rearranger.settings.migration" value="true" />
   </component>
@@ -49,6 +51,8 @@
       <workItem from="1618557933623" duration="3292000" />
       <workItem from="1618566453714" duration="7975000" />
       <workItem from="1618638403985" duration="2856000" />
+      <workItem from="1618645174706" duration="1978000" />
+      <workItem from="1618654171390" duration="1913000" />
     </task>
     <servers />
   </component>
