@@ -1,11 +1,11 @@
-
+statisticCalcParam(2, 4)
 //==============imitation=================
-function imitation() {
+function imitation(currentN) {
 	const time = 36000 //с
 	const lambda = 0.05
 	const mu = 0.005
 	const eta = 0.01
-	const n = 3
+	const n = currentN
 	const l = 2
 	const m = 1
 	const timeInQueue = 150 // время нахождения заявки в очереди сек
@@ -139,23 +139,16 @@ function imitation() {
 	}
 	////=======main cycle==================
 	/////=============calc params=================
-	let t = queueTime.length
-		? queueTime.reduce((a, b) => a + b) / queueTime.length
-		: 0
+    let midWorkingChannels = countChannels.reduce((a, b) => a + b) / countChannels.length
+    let midQueueTime = queueTime.reduce((a, b) => a + b) / queueTime.length
+    let probFullWorkingSystem = fullWorkingSystem / (time - freeTimeCount)
 
-	console.log('\n')
-	console.log(
-		'Среднее число занятых каналов' +
-			' ' +
-			countChannels.reduce((a, b) => a + b) / countChannels.length
-	)
-	console.log('Среднее время в очереди(сек)' + ' ' + t)
-	console.log(
-		'Вероятность полной занятости ситемы' +
-			' ' +
-			fullWorkingSystem / (time - freeTimeCount)
-	)
-	console.log('\n')
+    return {
+		midWorkingChannels,
+		midQueueTime,
+		probFullWorkingSystem,
+        allApps
+	}
 
 	/////=============calc params=================
 	//////==========functions=====================
@@ -242,3 +235,42 @@ function imitation() {
 	}
 }
 //==============imitation=================
+//============main calc params=============
+function statisticCalcParam(n1, n2) {
+	for (let index = n1; index <= n2; index++) {
+		let data = []
+
+		for (let i = 0; i < 100; i++) {
+			data.push(imitation(index))
+		}
+		data.sort((prev, next) => {
+			if (prev.allApps < next.allApps) {
+				return 1
+			}
+			if (prev.allApps > next.allApps) {
+				return -1
+			}
+			return 0
+		})
+
+		let mostWorkingChannels = data.splice(0, 9)
+		let midWorkingChannels = 0
+        let midQueueTime = 0
+        let probFullWorkingSystem = 0
+
+		mostWorkingChannels.forEach((app) => {
+			midWorkingChannels += app.midWorkingChannels
+            midQueueTime += app.midQueueTime
+            probFullWorkingSystem += app.probFullWorkingSystem
+		})
+
+		console.log('\n')
+		console.log(`Среднее число занятых каналов: ${midWorkingChannels / 10}`)
+		console.log(`Среднее время в очереди: ${midQueueTime / 10 } сек`)
+		console.log(
+			`Веротность полной занятости ситемы: ${probFullWorkingSystem / 10} `
+		)
+		console.log('\n')
+	}
+}
+//============main calc params=============
