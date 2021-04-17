@@ -46,7 +46,9 @@ function imitation() {
             }) : queue
 
         if (freeChannels) {
-            apps = redistributionChannels(apps, i)
+            let systemState = redistributionChannels(apps)
+            apps = systemState.apps
+            queue = systemState.queue
         }
 
         timeNewApp = i ? timeNewApp : getTimeNewApp(i)
@@ -116,6 +118,7 @@ function imitation() {
                     } else {
                         newApp.serviceTime = getServiceTime(freeChannels)
                         newApp.workingChannels = freeChannels
+                        freeChannels = 0
                         apps.push(newApp)
                     }
                 }
@@ -129,39 +132,55 @@ function imitation() {
     ////=======main cycle==================
 
     //////==========functions=====================
-    function redistributionChannels(apps, i) {
-        if (apps.length) {
-            for (let j = 0; j < apps.length; j++) {
-                while (freeChannels) {
-                    if (apps[j].workingChannels < l) {
-                        apps[j].workingChannels += 1
-                        freeChannels -= 1
-                        apps[j].serviceTime =
-                            i -
-                            apps[j].arrivalTimeApp + 
-                            getServiceTime(apps[j].workingChannels)
-                    } else {
-                        break
-                    }
+    function redistributionChannels(apps, queue) {
+        if (queue.length) {
+            for (let i = 0; i < queue.length; i++) {
+                if (freeChannels) {
+                    queue[i].serviceTime = getServiceTime(1)
+                    queue[i].workingChannels = 1
+                    freeChannels -= 1
+                    apps.push(queue[i])
+                    queue = queue.filter((app, index) => (index === i ? 0 : 1))
+                    apps = redistribution(apps)
                 }
             }
 
+        } else if (apps.length) {
+            apps = redistribution(apps)
         }
 
+        return {apps, queue}
+    }
+
+    function redistribution(apps) {
+        for (let j = 0; j < apps.length; j++) {
+            while (freeChannels) {
+                if (apps[j].workingChannels < l) {
+                    apps[j].workingChannels += 1
+                    freeChannels -= 1
+                    apps[j].serviceTime =
+                        i -
+                        apps[j].arrivalTimeApp +
+                        getServiceTime(apps[j].workingChannels)
+                } else {
+                    break
+                }
+            }
+        }
         return apps
     }
 
     function sortByWorkingChannels(apps) {
-            apps.sort((prev, next) => {
-                if (prev.workingChannels < next.workingChannels) {
-                    return 1
-                }
-                if (prev.workingChannels > next.workingChannels) {
-                    return -1
-                }
-                return 0
-            })
-        
+        apps.sort((prev, next) => {
+            if (prev.workingChannels < next.workingChannels) {
+                return 1
+            }
+            if (prev.workingChannels > next.workingChannels) {
+                return -1
+            }
+            return 0
+        })
+
         return apps
     }
 
