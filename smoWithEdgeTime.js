@@ -46,7 +46,7 @@ function imitation() {
             }) : queue
 
         if (freeChannels) {
-            let systemState = redistributionChannels(apps)
+            let systemState = redistributionChannels(apps,queue, i)
             apps = systemState.apps
             queue = systemState.queue
         }
@@ -132,27 +132,27 @@ function imitation() {
     ////=======main cycle==================
 
     //////==========functions=====================
-    function redistributionChannels(apps, queue) {
+    function redistributionChannels(apps, queue, i) {
         if (queue.length) {
-            for (let i = 0; i < queue.length; i++) {
+            for (let j = 0; j < queue.length; j++) {
                 if (freeChannels) {
-                    queue[i].serviceTime = getServiceTime(1)
-                    queue[i].workingChannels = 1
+                    queue[j].serviceTime = getServiceTime(1)
+                    queue[j].workingChannels = 1
                     freeChannels -= 1
-                    apps.push(queue[i])
-                    queue = queue.filter((app, index) => (index === i ? 0 : 1))
-                    apps = redistribution(apps)
+                    apps.push(queue[j])
+                    queue = queue.filter((app, index) => (index === j ? 0 : 1))
+                    apps = redistribution(apps, i)
                 }
             }
 
         } else if (apps.length) {
-            apps = redistribution(apps)
+            apps = redistribution(apps, i)
         }
 
         return {apps, queue}
     }
 
-    function redistribution(apps) {
+    function redistribution(apps, i) {
         for (let j = 0; j < apps.length; j++) {
             while (freeChannels) {
                 if (apps[j].workingChannels < l) {
