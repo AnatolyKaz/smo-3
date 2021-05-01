@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="5e43c924-da27-4212-b594-d83c0305421f" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/smoWithEdgeTime.js" beforeDir="false" afterPath="$PROJECT_DIR$/smoWithEdgeTime.js" afterDir="false" />
-    </list>
+    <list default="true" id="5e43c924-da27-4212-b594-d83c0305421f" name="Default Changelist" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -52,7 +49,7 @@
       <workItem from="1618566453714" duration="7975000" />
       <workItem from="1618638403985" duration="2856000" />
       <workItem from="1618645174706" duration="1978000" />
-      <workItem from="1618654171390" duration="1913000" />
+      <workItem from="1618654171390" duration="2756000" />
     </task>
     <servers />
   </component>

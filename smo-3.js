@@ -1,14 +1,14 @@
-statisticCalcParam(2, 4)
+statisticCalcParam(3, 5)
 //==============imitation=================
 function imitation(currentN) {
-	const time = 36000 //с
+	const time = 3600 //с
 	const lambda = 0.05
 	const mu = 0.005
 	const eta = 0.01
 	const n = currentN
 	const l = 2
 	const m = 1
-	const timeInQueue = 150 // время нахождения заявки в очереди сек
+	const timeInQueue = 120 // время нахождения заявки в очереди сек
 
 	let freeChannels = n
 	let countApps = [] //обслуженные заявки
@@ -18,15 +18,19 @@ function imitation(currentN) {
 	let freeTimeCount = 0 //время простоя системы
 	let apps = [] //массив заявок на обслуживании
 	let queue = [] // заявки в очереди
+	let appInQueue = 0
 
 	/// параметры которые необходимо найти
 	let countChannels = [] // количество занятых каналов в оазные моменты времени
 	let fullWorkingSystem = 0 // количество моментов времени когда истема полностью занята
-	let queueTime = [] // время проведенное в очереди
+	let queueTime = 0 // [] // время проведенное в очереди
 
 	////=======main cycle==================
 
 	for (let i = 0; i <= time; i++) {
+		if (apps.length === n && queue.length === m) {
+			fullWorkingSystem++
+		}
 		apps = apps.length // проверка готовнисти заявки
 			? apps.filter((app) => {
 					if (app.serviceTime + app.arrivalTimeApp === i) {
@@ -41,8 +45,9 @@ function imitation(currentN) {
 
 		queue = queue.length
 			? queue.filter((app) => {
+					queueTime++
 					if (app.arrivalTimeApp + timeInQueue === i) {
-						queueTime.push(timeInQueue)
+						//queueTime.push(timeInQueue)
 						refusalAppsCount++
 						return 0
 					} else {
@@ -66,6 +71,7 @@ function imitation(currentN) {
 			if (apps.length === n && queue.length === m) {
 				refusalAppsCount++
 			} else if (apps.length === n && queue.length < m) {
+				appInQueue++
 				queue.push({
 					arrivalTimeApp: i,
 				})
@@ -130,24 +136,23 @@ function imitation(currentN) {
 
 		countChannels.push(apps.length)
 
-		if (apps.length === n && queue.length === m) {
-			fullWorkingSystem++
-		}
+		
 		if (!apps.length && i) {
 			freeTimeCount++
 		}
 	}
 	////=======main cycle==================
 	/////=============calc params=================
-    let midWorkingChannels = countChannels.reduce((a, b) => a + b) / countChannels.length
-    let midQueueTime = queueTime.reduce((a, b) => a + b) / queueTime.length
-    let probFullWorkingSystem = fullWorkingSystem / (time - freeTimeCount)
+	let midWorkingChannels =
+		countChannels.reduce((a, b) => a + b) / countChannels.length
+	let midQueueTime = queueTime / appInQueue 
+	let probFullWorkingSystem = fullWorkingSystem / (time - freeTimeCount)
 
-    return {
+	return {
 		midWorkingChannels,
 		midQueueTime,
 		probFullWorkingSystem,
-        allApps
+		allApps,
 	}
 
 	/////=============calc params=================
@@ -160,7 +165,7 @@ function imitation(currentN) {
 					queue[j].workingChannels = 1
 					freeChannels -= 1
 					apps.push(queue[j])
-					queueTime.push(i - queue[j].arrivalTimeApp)
+					//queueTime.push(i - queue[j].arrivalTimeApp)
 					queue = queue.filter((app, index) => (index === j ? 0 : 1))
 					apps = redistribution(apps, i)
 				}
@@ -239,8 +244,8 @@ function imitation(currentN) {
 function statisticCalcParam(n1, n2) {
 	for (let index = n1; index <= n2; index++) {
 		let data = []
-
-		for (let i = 0; i < 100; i++) {
+		let countImitations = 10
+		for (let i = 0; i < countImitations; i++) {
 			data.push(imitation(index))
 		}
 		data.sort((prev, next) => {
@@ -253,22 +258,30 @@ function statisticCalcParam(n1, n2) {
 			return 0
 		})
 
-		let mostWorkingChannels = data.splice(0, 9)
+		//let mostWorkingChannels = data.splice(0, 9)
 		let midWorkingChannels = 0
-        let midQueueTime = 0
-        let probFullWorkingSystem = 0
+		let midQueueTime = 0
+		let probFullWorkingSystem = 0
 
-		mostWorkingChannels.forEach((app) => {
+		data.forEach((app) => {
 			midWorkingChannels += app.midWorkingChannels
-            midQueueTime += app.midQueueTime
-            probFullWorkingSystem += app.probFullWorkingSystem
+			midQueueTime += app.midQueueTime
+			probFullWorkingSystem += app.probFullWorkingSystem
 		})
 
 		console.log('\n')
-		console.log(`Среднее число занятых каналов: ${midWorkingChannels / 10}`)
-		console.log(`Среднее время в очереди: ${midQueueTime / 10 } сек`)
 		console.log(
-			`Веротность полной занятости ситемы: ${probFullWorkingSystem / 10} `
+			`Среднее число занятых каналов: ${
+				midWorkingChannels / countImitations
+			}`
+		)
+		console.log(
+			`Среднее время в очереди: ${midQueueTime / countImitations} сек`
+		)
+		console.log(
+			`Веротность полной занятости ситемы: ${
+				probFullWorkingSystem / countImitations
+			} `
 		)
 		console.log('\n')
 	}
